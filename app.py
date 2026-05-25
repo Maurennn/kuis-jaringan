@@ -3,11 +3,10 @@ import pandas as pd
 import time
 
 # Konfigurasi Halaman Web
-st.set_page_config(page_title="Kuis Jaringan", page_icon="🖥️", layout="centered")
+st.set_page_config(page_title="Kuis Pemrograman Jaringan V2", page_icon="🖥️", layout="centered")
 
-# Link Export CSV dari Google Sheets
-# Pastikan Google Sheets Anda diatur ke "Anyone with the link can view"
-SHEET_CSV_URL = "https://docs.google.com/spreadsheets/d/1iVs1CXwabMBrQTKumTEZEmOrju3-V9aYW-5oVLgk-FQ/export?format=csv"
+# Link Export CSV dari Google Sheets Bank Soal V2 (47 Soal)
+SHEET_CSV_URL = "https://docs.google.com/spreadsheets/d/1ms5wHVYz8vLuOoBZQdSMr449pMw-wIYIqB7slcT4P3A/export?format=csv"
 
 # Fungsi untuk mengambil data (di-cache agar web tidak lambat)
 @st.cache_data(ttl=60)
@@ -27,9 +26,9 @@ def reset_kuis():
     st.session_state.selesai = False
     st.session_state.pesan_evaluasi = ""
 
-# --- TAMPILAN WEB MULAI DI SINI ---
-st.title("🖥️ Kuis Pemrograman Jaringan")
-st.write("Uji pengetahuan Anda tentang arsitektur jaringan, TCP/UDP, dan socket programming.")
+# --- TAMPILAN WEB ---
+st.title("🖥️ Kuis Pemrograman Jaringan (Version 2)")
+st.write("Uji pengetahuan Anda dengan 47 soal komprehensif mengenai arsitektur jaringan, protokol transport, dan socket programming.")
 st.markdown("---")
 
 try:
@@ -78,7 +77,7 @@ if not st.session_state.selesai:
                 st.session_state.selesai = True
                 st.session_state.pesan_evaluasi = ""
             
-            # Refresh halaman untuk memperbarui tampilan
+            # Refresh halaman
             st.rerun()
         else:
             st.warning("Silakan pilih jawaban terlebih dahulu sebelum mengirim!")
@@ -88,15 +87,15 @@ else:
     st.header("🎉 Kuis Telah Selesai!")
     
     total_soal = len(df)
-    nilai_persen = (st.session_state.skor / total_soal) * 100
+    nilai_percent = (st.session_state.skor / total_soal) * 100
     
     col1, col2 = st.columns(2)
     col1.metric("Jawaban Benar", f"{st.session_state.skor} / {total_soal}")
-    col2.metric("Nilai Akhir", f"{nilai_persen:.0f}%")
+    col2.metric("Nilai Akhir", f"{nilai_percent:.2f}%")
     
-    if nilai_persen >= 80:
+    if nilai_percent >= 80:
         st.success("Luar Biasa! Anda sangat memahami materi ini.")
-    elif nilai_persen >= 60:
+    elif nilai_percent >= 60:
         st.info("Cukup baik, tapi masih perlu banyak mengulang materi.")
     else:
         st.error("Anda belum lulus. Silakan pelajari lagi materinya.")
