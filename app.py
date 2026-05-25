@@ -7,42 +7,52 @@ st.set_page_config(page_title="Kuis Pemrograman Jaringan V2", page_icon="🖥️
 # Link Export CSV dari Google Sheets Bank Soal V2 (47 Soal)
 SHEET_CSV_URL = "https://docs.google.com/spreadsheets/d/1ms5wHVYz8vLuOoBZQdSMr449pMw-wIYIqB7slcT4P3A/export?format=csv"
 
-# Fungsi untuk mengambil data (di-cache agar web tidak lambat)
+# Fungsi untuk mengambil data utama (di-cache agar web tidak lambat)
 @st.cache_data(ttl=60)
 def ambil_data_soal():
     return pd.read_csv(SHEET_CSV_URL)
 
-# Setup state untuk mengingat posisi kuis pengguna dan riwayat jawaban
+try:
+    df_master = ambil_data_soal()
+except Exception as e:
+    st.error("Gagal terhubung ke Database Soal. Pastikan Google Sheets bisa diakses publik.")
+    st.stop()
+
+# Setup state untuk mengingat posisi, riwayat, dan MENGACAK SOAL
 if 'soal_aktif' not in st.session_state:
     st.session_state.soal_aktif = 0
     st.session_state.skor = 0
     st.session_state.selesai = False
     st.session_state.riwayat_jawaban = []
+    # Mengacak urutan baris dataframe saat kuis pertama kali dimuat
+    st.session_state.df_shuffled = df_master.sample(frac=1).reset_index(drop=True)
 
 def reset_kuis():
     st.session_state.soal_aktif = 0
     st.session_state.skor = 0
     st.session_state.selesai = False
     st.session_state.riwayat_jawaban = []
+    # Mengacak ulang soal saat tombol "Ulangi Kuis" ditekan
+    st.session_state.df_shuffled = df_master.sample(frac=1).reset_index(drop=True)
+
+# Gunakan dataframe yang sudah diacak untuk sesi ini
+df = st.session_state.df_shuffled
 
 # --- TAMPILAN WEB ---
 st.title("🖥️ Kuis Pemrograman Jaringan (Version 2)")
-st.write("Uji pengetahuan Anda dengan 47 soal komprehensif mengenai arsitektur jaringan, protokol transport, dan socket programming.")
+st.write("Uji pengetahuan Anda dengan soal acak mengenai arsitektur jaringan, protokol transport, dan socket programming.")
 st.markdown("---")
-
-try:
-    df = ambil_data_soal()
-except Exception as e:
-    st.error("Gagal terhubung ke Database Soal. Pastikan Google Sheets bisa diakses publik.")
-    st.stop()
 
 # Jika kuis belum selesai
 if not st.session_state.selesai:
-    # Ambil baris soal saat ini
+    # Ambil baris soal saat ini dari dataframe yang sudah diacak
     idx = st.session_state.soal_aktif
     row = df.iloc[idx]
+    
+    # Penomoran urut untuk tampilan (1, 2, 3...)
+    nomor_tampil = idx + 1
 
-    st.subheader(f"Soal No. {row['No']} dari {len(df)}")
+    st.subheader(f"Soal No. {nomor_tampil} dari {len(df)}")
     st.write(row['Soal'])
 
     # Pemetaan opsi untuk mempermudah pengambilan teks lengkap nanti
@@ -72,7 +82,7 @@ if not st.session_state.selesai:
                 
             # Simpan riwayat jawaban untuk ditampilkan di akhir
             st.session_state.riwayat_jawaban.append({
-                "no": row['No'],
+                "nomor_urut": nomor_tampil,
                 "soal": row['Soal'],
                 "jawaban_user": jawaban_user,
                 "jawaban_benar": opsi_dict.get(kunci_jawaban, "Kunci tidak valid"),
@@ -111,11 +121,10 @@ else:
     st.markdown("---")
     st.subheader("📋 Evaluasi Jawaban Anda")
     
-    # Menampilkan daftar semua soal dengan format mirip e-learning/LMS
+    # Menampilkan daftar semua soal dengan format evaluasi
     for item in st.session_state.riwayat_jawaban:
-        # Menggunakan container dengan border agar tampilannya rapi seperti kotak soal
         with st.container(border=True):
-            st.markdown(f"**Question {item['no']}**")
+            st.markdown(f"**Question {item['nomor_urut']}**")
             
             if item['status']:
                 st.caption("✔️ :green[Correct]")
@@ -125,7 +134,12 @@ else:
                 st.caption("❌ :red[Incorrect]")
                 st.write(f"**Soal:** {item['soal']}")
                 st.write(f"**Jawaban Anda (Salah):** {item['jawaban_user']}")
-                st.write(f"**Jawaban Benar:** {item['jawaban_benar']}")
+                
+                # Highlight hijau menggunakan sintaks HTML
+                st.markdown(
+                    f"**Jawaban Benar:** <span style='background-color: #2e7d32; color: white; padding: 3px 8px; border-radius: 4px;'>{item['jawaban_benar']}</span>", 
+                    unsafe_allow_html=True
+                )
                 
     st.markdown("---")
     if st.button("🔄 Ulangi Kuis"):
