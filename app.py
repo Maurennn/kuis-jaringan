@@ -2,7 +2,7 @@ import streamlit as st
 import pandas as pd
 
 # Konfigurasi Halaman Web
-st.set_page_config(page_title="Kuis Pemrograman Jaringan V2", page_icon="🖥️", layout="centered")
+st.set_page_config(page_title="Kuis Pemrograman Jaringan", page_icon="🖥️", layout="centered")
 
 # Link Export CSV dari Google Sheets Bank Soal V2 (47 Soal)
 SHEET_CSV_URL = "https://docs.google.com/spreadsheets/d/1ms5wHVYz8vLuOoBZQdSMr449pMw-wIYIqB7slcT4P3A/export?format=csv"
@@ -39,7 +39,7 @@ def reset_kuis():
 df = st.session_state.df_shuffled
 
 # --- TAMPILAN WEB ---
-st.title("🖥️ Kuis Pemrograman Jaringan (Version 2)")
+st.title("🖥️ Kuis Pemrograman Jaringan")
 st.write("Uji pengetahuan Anda dengan soal acak mengenai arsitektur jaringan, protokol transport, dan socket programming.")
 st.markdown("---")
 
@@ -133,7 +133,7 @@ else:
             else:
                 st.caption("❌ :red[Incorrect]")
                 st.write(f"**Soal:** {item['soal']}")
-                st.write(f"**Jawaban Anda (Salah):** {item['jawaban_user']}")
+                st.write(f"**Jawaban Anda:** {item['jawaban_user']}")
                 
                 # Highlight hijau menggunakan sintaks HTML
                 st.markdown(
