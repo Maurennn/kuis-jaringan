@@ -124,7 +124,7 @@ else:
     # Menampilkan daftar semua soal dengan format evaluasi
     for item in st.session_state.riwayat_jawaban:
         with st.container(border=True):
-            st.markdown(f"**Question {item['nomor_urut']}**")
+            st.markdown(f"**Soal Nomor {item['nomor_urut']}**")
             
             if item['status']:
                 st.caption("✔️ :green[Correct]")
