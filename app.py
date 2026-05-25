@@ -111,15 +111,21 @@ else:
     st.markdown("---")
     st.subheader("📋 Evaluasi Jawaban Anda")
     
-    # Menampilkan daftar semua soal, jawaban user, dan jawaban yang benar
+    # Menampilkan daftar semua soal dengan format mirip e-learning/LMS
     for item in st.session_state.riwayat_jawaban:
-        with st.expander(f"Soal No. {item['no']}: {'✅ Benar' if item['status'] else '❌ Salah'}"):
-            st.write(f"**Pertanyaan:** {item['soal']}")
-            st.write(f"**Jawaban Anda:** {item['jawaban_user']}")
+        # Menggunakan container dengan border agar tampilannya rapi seperti kotak soal
+        with st.container(border=True):
+            st.markdown(f"**Question {item['no']}**")
             
-            # Jika salah, tampilkan kunci jawaban yang benar
-            if not item['status']:
-                st.error(f"**Jawaban yang Benar:** {item['jawaban_benar']}")
+            if item['status']:
+                st.caption("✔️ :green[Correct]")
+                st.write(f"**Soal:** {item['soal']}")
+                st.write(f"**Jawaban:** {item['jawaban_user']}")
+            else:
+                st.caption("❌ :red[Incorrect]")
+                st.write(f"**Soal:** {item['soal']}")
+                st.write(f"**Jawaban Anda (Salah):** {item['jawaban_user']}")
+                st.write(f"**Jawaban Benar:** {item['jawaban_benar']}")
                 
     st.markdown("---")
     if st.button("🔄 Ulangi Kuis"):
