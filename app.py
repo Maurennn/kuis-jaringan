@@ -3,7 +3,7 @@ import pandas as pd
 import time
 
 # Konfigurasi Halaman Web
-st.set_page_config(page_title="Kuis Pemrograman Jaringan V2", page_icon="🖥️", layout="centered")
+st.set_page_config(page_title="Kuis Pemrograman Jaringan", page_icon="🖥️", layout="centered")
 
 # Link Export CSV dari Google Sheets Bank Soal V2 (47 Soal)
 SHEET_CSV_URL = "https://docs.google.com/spreadsheets/d/1ms5wHVYz8vLuOoBZQdSMr449pMw-wIYIqB7slcT4P3A/export?format=csv"
@@ -27,7 +27,7 @@ def reset_kuis():
     st.session_state.pesan_evaluasi = ""
 
 # --- TAMPILAN WEB ---
-st.title("🖥️ Kuis Pemrograman Jaringan (Version 2)")
+st.title("🖥️ Kuis Pemrograman Jaringan")
 st.write("Uji pengetahuan Anda dengan 47 soal komprehensif mengenai arsitektur jaringan, protokol transport, dan socket programming.")
 st.markdown("---")
 
